@@ -10,27 +10,64 @@ import {useState,useEffect} from "react"
 function Homepage() {
 
     const [userList,setUserList]=useState([])
+    const [searchedCountry,setSearchedCountry]=useState("")
+    const [filteredUser,setfilteredUser]=useState([])
 
     const fetchData=()=>{
-        axios.get("https://randomuser.me/api/?results=50").then(res=>setUserList(res.data.results))
+        axios.get("https://randomuser.me/api/?results=50").then(res=>{setUserList(res.data.results);setfilteredUser(res.data.results)})
     }
+
+    const handlechange = (e)=>{
+        e.preventDefault();
+        setSearchedCountry(e.target.value);
+        console.log(searchedCountry)
+
+        const filteredUser = userList.filter(user=>{
+            const title = user.location.country.toUpperCase()
+            const text = searchedCountry.toUpperCase()
+            return title.includes(text)
+        })
+
+        setfilteredUser(filteredUser);
+
+    }
+    
+    
+    
+    
+    
+    const handleclick = ()=>{}
+
+
+
 
     useEffect(()=>{
         fetchData()
     },[])
 
     return (
-        <div style={{backgroundColor:"yellowgreen",color:"black",display:"flex",flexWrap:"wrap",justifyContent:"center"}}>
+        <div>
             
             {/* {
             userList.length>0 ? 
             userList.map(usr=> <p>{usr.gender}</p>) :
             null
             } */}
+            
+            <div style={{display:"flex",justifyContent:"center",height:35,backgroundColor:"tomato"}}>
+                <h1 style={{position:"relative",bottom:27}}>Random User</h1>
+                <form onSubmit={handleclick}>
+                    <input style={{height:30,position:"absolute",right:0,borderRadius:10,backgroundColor:'lightcyan'}} type="text" onChange={handlechange} placeholder="enter a country name"/>
+                    <button style={{height:35,position:"relative",zIndex:-1,borderRadius:10,backgroundColor:'lightcyan'}} type="submit">Search</button>
+                </form>
+            </div>
 
-            { userList?.map(usr=> <Card user={usr} key={usr.login.uuid}/>)}
+            <div style={{backgroundColor:"yellowgreen",color:"black",display:"flex",flexWrap:"wrap",justifyContent:"center"}}>
 
-            {/* {userList[0].gender} */}
+                { filteredUser.map(usr=> <Card user={usr} key={usr.login.uuid}/>)}
+                {/* {userList[0].gender} */}
+            </div>
+            
             
         </div>
     )
